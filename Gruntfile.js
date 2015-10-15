@@ -27,8 +27,8 @@ grunt.initConfig({
 
   watch: {
     js: {
-      files: ['app.js', 'src/*.js'],
-      tasks: ['jshint', 'uglify', 'develop'],
+      files: ['app.js', 'src/*.js', 'test/*.js'],
+      tasks: ['jshint', 'uglify', 'mochaTest', 'develop'],
       options: {
         nospawn: true
       }
@@ -65,8 +65,7 @@ grunt.loadNpmTasks('grunt-contrib-copy');
 grunt.loadNpmTasks('grunt-contrib-jshint');
 grunt.loadNpmTasks('grunt-mocha-test');
 
-grunt.registerTask('build', ['jshint', 'uglify', 'test'/*, 'jsdoc'**/]);
-grunt.registerTask('default', ['jshint', 'uglify', 'test', 'develop', 'watch']);
+grunt.registerTask('default', ['jshint', 'uglify', 'mochaTest', 'develop', 'watch']);
 grunt.registerTask('test', ['jshint', 'mochaTest', 'uglify']);
 
 };
