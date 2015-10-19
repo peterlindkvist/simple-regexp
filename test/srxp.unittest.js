@@ -39,40 +39,46 @@ describe('Simple Regexp', function(){
 
   describe('match', function(){
     it('simple string ', function(){
-      var s = srxp('abcdefgabc');
-      assert.deepEqual(s.match('abc').result(), ['abc', 'abc']);
-      assert.deepEqual(s.match('cde').result(), ['cde']);
-      assert.notDeepEqual(s.match('cde').result(), ['cdde']);
+      assert.deepEqual(srxp('abcdefgabcd').match('abc').result(), ['abc', 'abc']);
+      assert.deepEqual(srxp('abcdefgabcd').match('cde').result(), ['cde']);
+      assert.notDeepEqual(srxp('abcdefgabcd').match('cde').result(), ['cdde']);
 
     });
 
     it('simple regexp ', function(){
-      var s = srxp('abcdefgabc');
-      assert.deepEqual(s.match(/(abc)/g).result(), ['abc', 'abc']);
-      assert.deepEqual(s.match(/(a|b)/g).result(), ['a', 'b', 'a', 'b']);
-      assert.deepEqual(s.match(/(cde)/g).result(), ['cde']);
-      assert.notDeepEqual(s.match(/(cde)/g).result(), ['cdde']);
-      assert.notDeepEqual(s.match(/(cde)/g).result(), ['cdde']);
+      assert.deepEqual(srxp('abcdefgabc').match(/(abc)/g).result(), ['abc', 'abc']);
+      assert.deepEqual(srxp('abcdefgabc').match(/(a|b)/g).result(), ['a', 'b', 'a', 'b']);
+      assert.deepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cde']);
+      assert.notDeepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cdde']);
+      assert.notDeepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cdde']);
 
     });
 
     it('expanded searches', function(){
-      var s = srxp('<div  class = "test">content</div>');
-      assert.deepEqual(s.match('<div').result(), ['<div']);
-      assert.deepEqual(s.match('<div class').result(), ['<div  class']);
-      assert.deepEqual(s.match('<div  class').result(), ['<div  class']);
-      assert.deepEqual(s.match('<div   class').result(), ['<div  class']);
-      assert.deepEqual(s.match('class = "').result(), ['class = "']);
+      var str = '<div  class = "test">content</div>';
+      assert.deepEqual(srxp(str).match('<div').result(), ['<div']);
+      assert.deepEqual(srxp(str).match('<div class').result(), ['<div  class']);
+      assert.deepEqual(srxp(str).match('<div  class').result(), ['<div  class']);
+      assert.deepEqual(srxp(str).match('<div   class').result(), ['<div  class']);
+      assert.deepEqual(srxp(str).match('class = "').result(), ['class = "']);
     });
   });
 
   describe('between', function(){
     it('simple strings ', function(){
-      var s = srxp('abcdefgabc');
-      assert.deepEqual(s.between('bc', 'gab').result(), ['def']);
-      assert.deepEqual(s.between('a', 'c').result(), ['b', 'b']);
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).between('bc', 'gab').result(), ['def']);
+      assert.deepEqual(srxp(str).between('a', 'c').result(), ['b', 'b']);
 
 
     });
+  });
+
+  describe('chaining', function(){
+     it('should match chain searches', function(){
+       var str = ('abcdefghi def');
+       assert.deepEqual(srxp(str).match('def').match('def').result(), ['def', 'def']);
+       assert.deepEqual(srxp(str).match('cdefg').match('def').result(), ['def']);
+     });
   });
 });

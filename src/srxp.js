@@ -15,9 +15,11 @@ var exp = (function(){
 
   srxp.prototype.init = function(source){
     this.source = source;
-    this.depth = 0;
+    this.depth = 1;
     this.matches = [];
     this.regExps = [];
+
+    this.matches.push([this.source]);
   };
 
   srxp.prototype.result = function(){
@@ -25,12 +27,14 @@ var exp = (function(){
   };
 
   srxp.prototype.match = function(pattern){
-    var match, matches = [];
+    var i, match, matches = [];
     var rxp = srxp._cleanupPattern(pattern);
+    var prev = this.result();
 
-    while(match = rxp.exec(this.source)){ // jshint ignore:line
-      matches.push(match[1]);
-      //console.log("rxp", rxp, match);
+    for(i = 0; i < prev.length ; i++){
+      while(match = rxp.exec(prev[i])){ // jshint ignore:line
+        matches.push(match[1]);
+      }
     }
 
     this._add(rxp, matches);
@@ -46,8 +50,8 @@ var exp = (function(){
   };
 
   srxp.prototype._add = function(rxp, matches){
-    this.regExps[this.depth] = rxp;
-    this.matches[this.depth] = matches;
+    this.regExps.push(rxp);
+    this.matches.push(matches);
     this.depth ++;
   };
 
