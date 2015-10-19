@@ -25,8 +25,13 @@ var exp = (function(){
   };
 
   srxp.prototype.match = function(pattern){
+    var match, matches = [];
     var rxp = srxp._cleanupPattern(pattern);
-    var matches = this.source.match(rxp);
+
+    while(match = rxp.exec(this.source)){ // jshint ignore:line
+      matches.push(match[1]);
+      //console.log("rxp", rxp, match);
+    }
 
     this._add(rxp, matches);
 
@@ -34,14 +39,8 @@ var exp = (function(){
   };
 
   srxp.prototype.between = function(start, end){
-    var match, matches = [];
     var rxp = new RegExp(start + srxp.ANY + end, 'mg');
-
-    while(match = rxp.exec(this.source)){ // jshint ignore:line
-      matches.push(match[1]);
-    }
-
-    this._add(rxp, matches);
+    this.match(rxp);
 
     return this;
   };
@@ -67,6 +66,21 @@ var exp = (function(){
     text = text.replace(/[üũ]/g, 'u');  //make u-ish chars to u
     text = text.replace(/[ÜŨ]/g, 'U');  //make U-ish chars to U
 
+    text = srxp.trim(text);
+
+    return text;
+  };
+
+  srxp.expandPattern = function(text){
+
+    text = text.replace(/\s{1,}/g, '\\s{1,}');
+
+    return text;
+  };
+
+  srxp.trim = function(text){
+    text = text.replace(/^[\s|\t]*/g, ''); //ltrim
+    text = text.replace(/[\s|\t]*$/g, ''); //rtrim
     text = text.replace(/(\s|\t){2,}/g, ' ');  //make multiple spaces or tabs to one space
 
     return text;
@@ -77,7 +91,8 @@ var exp = (function(){
     if(pattern instanceof RegExp){
       rxp = pattern;
     } else {
-      rxp = new RegExp(pattern, 'g');
+      pattern = srxp.expandPattern(pattern);
+      rxp = new RegExp('(' + pattern + ')', 'mg');
     }
 
     return rxp;

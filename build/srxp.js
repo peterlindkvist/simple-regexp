@@ -16,18 +16,17 @@ var exp = function() {
         return this.matches[this.depth - 1];
     };
     srxp.prototype.match = function(pattern) {
-        var rxp = srxp._cleanupPattern(pattern);
-        var matches = this.source.match(rxp);
-        this._add(rxp, matches);
-        return this;
-    };
-    srxp.prototype.between = function(start, end) {
         var match, matches = [];
-        var rxp = new RegExp(start + srxp.ANY + end, "mg");
+        var rxp = srxp._cleanupPattern(pattern);
         while (match = rxp.exec(this.source)) {
             matches.push(match[1]);
         }
         this._add(rxp, matches);
+        return this;
+    };
+    srxp.prototype.between = function(start, end) {
+        var rxp = new RegExp(start + srxp.ANY + end, "mg");
+        this.match(rxp);
         return this;
     };
     srxp.prototype._add = function(rxp, matches) {
@@ -45,6 +44,16 @@ var exp = function() {
         text = text.replace(/[ÖÕØ]/g, "O");
         text = text.replace(/[üũ]/g, "u");
         text = text.replace(/[ÜŨ]/g, "U");
+        text = srxp.trim(text);
+        return text;
+    };
+    srxp.expandPattern = function(text) {
+        text = text.replace(/\s{1,}/g, "\\s{1,}");
+        return text;
+    };
+    srxp.trim = function(text) {
+        text = text.replace(/^[\s|\t]*/g, "");
+        text = text.replace(/[\s|\t]*$/g, "");
         text = text.replace(/(\s|\t){2,}/g, " ");
         return text;
     };
@@ -53,7 +62,8 @@ var exp = function() {
         if (pattern instanceof RegExp) {
             rxp = pattern;
         } else {
-            rxp = new RegExp(pattern, "g");
+            pattern = srxp.expandPattern(pattern);
+            rxp = new RegExp("(" + pattern + ")", "mg");
         }
         return rxp;
     };
