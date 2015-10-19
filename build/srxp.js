@@ -29,8 +29,20 @@ var exp = function() {
         return this;
     };
     srxp.prototype.between = function(start, end) {
-        var rxp = new RegExp(start + srxp.ANY + end, "mg");
+        var rxp = new RegExp(start + "(" + srxp.ANY + ")" + end, "mg");
         this.match(rxp);
+        return this;
+    };
+    srxp.prototype.exclude = function(pattern) {
+        var i, match, matches = [];
+        var rxp = new RegExp(pattern, "mg");
+        var prev = this.result();
+        for (i = 0; i < prev.length; i++) {
+            if (rxp.exec(prev[i]) === null) {
+                matches.push(prev[i]);
+            }
+        }
+        this._add(null, matches);
         return this;
     };
     srxp.prototype._add = function(rxp, matches) {
@@ -38,7 +50,7 @@ var exp = function() {
         this.matches.push(matches);
         this.depth++;
     };
-    srxp.ANY = "([\\s\\S]*?)";
+    srxp.ANY = "[\\s\\S]*?";
     srxp.simplify = function(text) {
         text = text.replace(/[åäáàã]/g, "a");
         text = text.replace(/[ÅÄÁÀÃ]/g, "A");

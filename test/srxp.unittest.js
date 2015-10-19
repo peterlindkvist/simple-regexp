@@ -74,11 +74,27 @@ describe('Simple Regexp', function(){
     });
   });
 
+  describe('exclude', function(){
+    it('simple strings ', function(){
+      var str = 'abc aBc abc';
+      assert.deepEqual(srxp(str).between('a','c').result(), ['b', 'B', 'b']);
+      assert.deepEqual(srxp(str).between('a','c').exclude('B').result(), ['b', 'b']);
+      assert.deepEqual(srxp(str).between('a','c').exclude('b').result(), ['B']);
+    });
+  });
+
   describe('chaining', function(){
      it('should match chain searches', function(){
        var str = ('abcdefghi def');
        assert.deepEqual(srxp(str).match('def').match('def').result(), ['def', 'def']);
        assert.deepEqual(srxp(str).match('cdefg').match('def').result(), ['def']);
      });
+
+    it('should match chain searches with between', function(){
+      var str = ('abcdefghi def');
+      assert.deepEqual(srxp(str).between('bc', 'gh').match('d').result(), ['d']);
+      assert.deepEqual(srxp(str).between('a', ' def').between('c', 'i').match('ef').result(), ['ef']);
+
+    });
   });
 });

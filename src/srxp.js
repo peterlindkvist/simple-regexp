@@ -28,7 +28,7 @@ var exp = (function(){
 
   srxp.prototype.match = function(pattern){
     var i, match, matches = [];
-    var rxp = srxp._cleanupPattern(pattern);
+    var rxp = srxp._getRegExp(pattern);
     var prev = this.result();
 
     for(i = 0; i < prev.length ; i++){
@@ -43,8 +43,24 @@ var exp = (function(){
   };
 
   srxp.prototype.between = function(start, end){
-    var rxp = new RegExp(start + srxp.ANY + end, 'mg');
+    var rxp = new RegExp(start + '(' + srxp.ANY + ')' + end, 'mg');
     this.match(rxp);
+
+    return this;
+  };
+
+  srxp.prototype.exclude = function(pattern){
+    var i, matches = [];
+    var rxp = srxp._getRegExp(pattern);
+    var prev = this.result();
+
+    for(i = 0; i < prev.length ; i++){
+      if(rxp.exec(prev[i]) === null){
+        matches.push(prev[i]);
+      }
+    }
+
+    this._add(null, matches);
 
     return this;
   };
@@ -57,7 +73,7 @@ var exp = (function(){
 
 
   /* statics */
-  srxp.ANY = '([\\s\\S]*?)';
+  srxp.ANY = '[\\s\\S]*?';
 
 
   srxp.simplify = function(text){
@@ -90,7 +106,7 @@ var exp = (function(){
     return text;
   };
 
-  srxp._cleanupPattern = function(pattern){
+  srxp._getRegExp = function(pattern){
     var rxp;
     if(pattern instanceof RegExp){
       rxp = pattern;
