@@ -27,14 +27,21 @@ var exp = (function(){
   };
 
   srxp.prototype.match = function(pattern){
-    var i, match, matches = [];
+    var i, j, match, matches = [];
     var rxp = srxp._getRegExp(pattern);
     var prev = this.result();
 
     //loop the previous results and find matches.
     for(i = 0; i < prev.length ; i++){
       while(match = rxp.exec(prev[i])){ // jshint ignore:line
-        matches.push(match[1]);
+        if(match.length === 1){
+          matches.push(match[0]);
+        } else {
+          // grouped search, att all matches.
+          for(j = 1 ; j < match.length ; j ++){
+            matches.push(match[j]);
+          }
+        }
       }
     }
 
@@ -45,7 +52,7 @@ var exp = (function(){
 
   srxp.prototype.between = function(start, end){
     //var rxp = new RegExp(start + '(' + srxp.ANY + ')' + end, 'mg');
-    var i, j, k, match, matches = [], startMatches = [], endMatches = [], indexes = [], index, startIndex= -1, depth = 0;
+    var i, j, k, match, matches = [], indexes = [], index, depth = 0;
 
     //get start and end regexps.
     var startRxp = srxp._getRegExp(start);
@@ -58,13 +65,11 @@ var exp = (function(){
 
       //find all starting positions
       while(match = startRxp.exec(prev[i])){ // jshint ignore:line
-        startMatches.push(match);
         indexes.push({type : 'start', pos : match.index + match[0].length, end : 0});
       }
 
       //find all ending positions
       while(match = endRxp.exec(prev[i])){ // jshint ignore:line
-        endMatches.push(match);
         indexes.push({ type : 'end', pos : match.index});
       }
 
@@ -98,7 +103,7 @@ var exp = (function(){
       for(j = 0 ; j < indexes.length ; j++){
         index = indexes[j];
 
-        if(index.type === 'start'){
+        if(index.type === 'start' && index.pos < index.end){
           match = prev[i].substring(index.pos, index.end);
           matches.push(match);
         }
@@ -169,7 +174,7 @@ var exp = (function(){
       rxp = pattern;
     } else {
       pattern = srxp.expandPattern(pattern);
-      rxp = new RegExp('(' + pattern + ')', 'mg');
+      rxp = new RegExp('' + pattern + '', 'mg');
     }
 
     return rxp;

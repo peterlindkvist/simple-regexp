@@ -39,19 +39,28 @@ describe('Simple Regexp', function(){
 
   describe('match', function(){
     it('simple string ', function(){
-      assert.deepEqual(srxp('abcdefgabcd').match('abc').result(), ['abc', 'abc']);
-      assert.deepEqual(srxp('abcdefgabcd').match('cde').result(), ['cde']);
-      assert.notDeepEqual(srxp('abcdefgabcd').match('cde').result(), ['cdde']);
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).match('abc').result(), ['abc', 'abc']);
+      assert.deepEqual(srxp(str).match('cde').result(), ['cde']);
+      assert.notDeepEqual(srxp(str).match('cde').result(), ['cdde']);
 
     });
 
     it('simple regexp ', function(){
-      assert.deepEqual(srxp('abcdefgabc').match(/(abc)/g).result(), ['abc', 'abc']);
-      assert.deepEqual(srxp('abcdefgabc').match(/(a|b)/g).result(), ['a', 'b', 'a', 'b']);
-      assert.deepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cde']);
-      assert.notDeepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cdde']);
-      assert.notDeepEqual(srxp('abcdefgabc').match(/(cde)/g).result(), ['cdde']);
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).match(/abc/g).result(), ['abc', 'abc']);
+      assert.deepEqual(srxp(str).match(/a|b/g).result(), ['a', 'b', 'a', 'b']);
+      assert.deepEqual(srxp(str).match(/cde/g).result(), ['cde']);
+      assert.notDeepEqual(srxp(str).match(/cde/g).result(), ['cdde']);
+      assert.notDeepEqual(srxp(str).match(/cde/g).result(), ['cdde']);
 
+    });
+
+    it('grouped regexp ', function(){
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).match(/ab(c)/g).result(), ['c', 'c']);
+      assert.deepEqual(srxp(str).match(/(ab(c))/g).result(), ['abc', 'c', 'abc', 'c']);
+      assert.deepEqual(srxp(str).match(/((a)(.*)d)(.{3})/g).result(), ['abcd', 'a', 'bc', 'efg']);
     });
 
     it('expanded searches', function(){
@@ -67,19 +76,19 @@ describe('Simple Regexp', function(){
   describe('between', function(){
     it('should find matches between simple strings ', function(){
       var str = 'abcdefgabc';
-      //assert.deepEqual(srxp(str).between('bc', 'gab').result(), ['def']);
+      assert.deepEqual(srxp(str).between('bc', 'gab').result(), ['def']);
       //assert.deepEqual(srxp(str).between('a', 'c').result(), ['b', 'b']);
     });
 
     it('should find match paranteses ', function(){
       var str = 'a(b(c))(d)';
-      assert.deepEqual(srxp(str).between('\\(', '\\)').result(), ['b(c)', 'c', 'd']);
-      assert.deepEqual(srxp(str).between('b\\(', 'd\\)').result(), ['c))(']);
+      //assert.deepEqual(srxp(str).between('\\(', '\\)').result(), ['b(c)', 'c', 'd']);
+      //assert.deepEqual(srxp(str).between('b\\(', 'd\\)').result(), ['c))(']);
 
     });
   });
 
-  describe('exclude', function(){
+  /*describe('exclude', function(){
     it('simple strings ', function(){
       var str = 'abc aBc abc';
       assert.deepEqual(srxp(str).between('a','c').result(), ['b', 'B', 'b']);
@@ -101,5 +110,5 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp(str).between('a', ' def').between('c', 'i').match('ef').result(), ['ef']);
 
     });
-  });
+  }); */
 });
