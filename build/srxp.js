@@ -129,13 +129,20 @@ var exp = function() {
         text = text.replace(/(\s|\t){2,}/g, " ");
         return text;
     };
-    srxp._getRegExp = function(pattern) {
+    srxp._getRegExp = function(pattern, escape, expand) {
         var rxp;
+        escape = escape === undefined ? true : escape;
+        expand = expand === undefined ? true : expand;
         if (pattern instanceof RegExp) {
             rxp = pattern;
         } else {
-            pattern = srxp.expandPattern(pattern);
-            rxp = new RegExp("" + pattern + "", "mg");
+            if (escape) {
+                pattern = srxp.escape(pattern);
+            }
+            if (expand) {
+                pattern = srxp.expandPattern(pattern);
+            }
+            rxp = new RegExp(pattern, "mg");
         }
         return rxp;
     };

@@ -95,8 +95,8 @@ describe('Simple Regexp', function(){
 
     it('should find match paranteses ', function(){
       var str = 'a(b(c))(d)';
-      assert.deepEqual(srxp(str).between('\\(', '\\)').result(), ['b(c)', 'c', 'd']);
-      assert.deepEqual(srxp(str).between('b\\(', 'd\\)').result(), ['c))(']);
+      assert.deepEqual(srxp(str).between('(', ')').result(), ['b(c)', 'c', 'd']);
+      assert.deepEqual(srxp(str).between('b(', 'd)').result(), ['c))(']);
     });
   });
 
