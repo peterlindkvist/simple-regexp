@@ -163,6 +163,11 @@ var exp = (function(){
     return text;
   };
 
+  srxp.escape = function(text){
+    text = text.replace(/([\(\)\[\]\{\}\\\?\.])/g, '\\$1');
+    return text;
+  };
+
   srxp.trim = function(text){
     text = text.replace(/^(\s|\t)*/g, ''); //ltrim
     text = text.replace(/(\s|\t)*$/g, ''); //rtrim

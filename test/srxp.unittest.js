@@ -28,6 +28,12 @@ describe('Simple Regexp', function(){
     });
   });
 
+  describe('escape', function(){
+    it('should escape (\) special chars as ()[]{}!?., in strings eg patterns', function(){
+      assert.equal(srxp.escape('()'), '\\(\\)');
+    });
+  });
+
   describe('expandPattern', function(){
 
     it('should add regexp for multiple spaces', function(){

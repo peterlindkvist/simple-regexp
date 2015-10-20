@@ -119,6 +119,10 @@ var exp = function() {
         text = text.replace(/\s{1,}/g, "\\s{1,}");
         return text;
     };
+    srxp.escape = function(text) {
+        text = text.replace(/([\(\)\[\]\{\}\\\?\.])/g, "\\$1");
+        return text;
+    };
     srxp.trim = function(text) {
         text = text.replace(/^(\s|\t)*/g, "");
         text = text.replace(/(\s|\t)*$/g, "");
