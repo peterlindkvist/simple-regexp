@@ -95,7 +95,7 @@ describe('Simple Regexp', function(){
     });
   });
 
-  /*describe('exclude', function(){
+  describe('exclude', function(){
     it('simple strings ', function(){
       var str = 'abc aBc abc';
       assert.deepEqual(srxp(str).between('a','c').result(), ['b', 'B', 'b']);
@@ -117,5 +117,5 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp(str).between('a', ' def').between('c', 'i').match('ef').result(), ['ef']);
 
     });
-  }); */
+  });
 });
