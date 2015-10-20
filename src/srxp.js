@@ -31,6 +31,7 @@ var exp = (function(){
     var rxp = srxp._getRegExp(pattern);
     var prev = this.result();
 
+    //loop the previous results and find matches.
     for(i = 0; i < prev.length ; i++){
       while(match = rxp.exec(prev[i])){ // jshint ignore:line
         matches.push(match[1]);
@@ -43,8 +44,69 @@ var exp = (function(){
   };
 
   srxp.prototype.between = function(start, end){
-    var rxp = new RegExp(start + '(' + srxp.ANY + ')' + end, 'mg');
-    this.match(rxp);
+    //var rxp = new RegExp(start + '(' + srxp.ANY + ')' + end, 'mg');
+    var i, j, k, match, matches = [], startMatches = [], endMatches = [], indexes = [], index, startIndex= -1, depth = 0;
+
+    //get start and end regexps.
+    var startRxp = srxp._getRegExp(start);
+    var endRxp = srxp._getRegExp(end);
+
+    //get previous results in chain
+    var prev = this.result();
+
+    for(i = 0; i < prev.length ; i++){
+
+      //find all starting positions
+      while(match = startRxp.exec(prev[i])){ // jshint ignore:line
+        startMatches.push(match);
+        indexes.push({type : 'start', pos : match.index + match[0].length, end : 0});
+      }
+
+      //find all ending positions
+      while(match = endRxp.exec(prev[i])){ // jshint ignore:line
+        endMatches.push(match);
+        indexes.push({ type : 'end', pos : match.index});
+      }
+
+      //sort by position
+      indexes.sort(function(a, b){
+        return a.pos > b.pos;
+      });
+
+      // match starting position with ending position to match nested groups. ((a)) => [(a), a] not [(a]
+      for(j = 0 ; j < indexes.length ; j++){
+        index = indexes[j];
+
+        if(index.type === 'start'){
+          for(k = j + 1; k < indexes.length ; k++){
+            if(indexes[k].type === 'start'){
+              depth ++;
+            } else if(indexes[k].type === 'end'){
+              if(depth === 0){
+                index.end = indexes[k].pos;
+                break;
+              } else {
+                depth --;
+              }
+            }
+          }
+
+        }
+      }
+
+      //fetch the chars between matches
+      for(j = 0 ; j < indexes.length ; j++){
+        index = indexes[j];
+
+        if(index.type === 'start'){
+          match = prev[i].substring(index.pos, index.end);
+          matches.push(match);
+        }
+      }
+
+    }
+
+    this._add(undefined, matches);
 
     return this;
   };
@@ -71,16 +133,11 @@ var exp = (function(){
     this.depth ++;
   };
 
-
-  /* statics */
-  srxp.ANY = '[\\s\\S]*?';
-
-
   srxp.simplify = function(text){
-    text = text.replace(/[åäáàã]/g, 'a'); //make a-ish chars to a
-    text = text.replace(/[ÅÄÁÀÃ]/g, 'A'); //make A-ish chars to A
-    text = text.replace(/[éèẽæë]/g, 'e'); //make e-ish chars to e
-    text = text.replace(/[ÉÈẼÆË]/g, 'E'); //make E-ish chars to E
+    text = text.replace(/[åäáàãæ]/g, 'a'); //make a-ish chars to a
+    text = text.replace(/[ÅÄÁÀÃÆ]/g, 'A'); //make A-ish chars to A
+    text = text.replace(/[éèẽë]/g, 'e'); //make e-ish chars to e
+    text = text.replace(/[ÉÈẼË]/g, 'E'); //make E-ish chars to E
     text = text.replace(/[öõø]/g, 'o'); //make o-ish chars to o
     text = text.replace(/[ÖÕØ]/g, 'O'); //make O-ish chars to O
     text = text.replace(/[üũ]/g, 'u');  //make u-ish chars to u
@@ -99,8 +156,8 @@ var exp = (function(){
   };
 
   srxp.trim = function(text){
-    text = text.replace(/^[\s|\t]*/g, ''); //ltrim
-    text = text.replace(/[\s|\t]*$/g, ''); //rtrim
+    text = text.replace(/^(\s|\t)*/g, ''); //ltrim
+    text = text.replace(/(\s|\t)*$/g, ''); //rtrim
     text = text.replace(/(\s|\t){2,}/g, ' ');  //make multiple spaces or tabs to one space
 
     return text;

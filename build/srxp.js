@@ -18,7 +18,7 @@ var exp = function() {
     };
     srxp.prototype.match = function(pattern) {
         var i, match, matches = [];
-        var rxp = srxp._cleanupPattern(pattern);
+        var rxp = srxp._getRegExp(pattern);
         var prev = this.result();
         for (i = 0; i < prev.length; i++) {
             while (match = rxp.exec(prev[i])) {
@@ -29,13 +29,60 @@ var exp = function() {
         return this;
     };
     srxp.prototype.between = function(start, end) {
-        var rxp = new RegExp(start + "(" + srxp.ANY + ")" + end, "mg");
-        this.match(rxp);
+        var i, j, k, match, matches = [], startMatches = [], endMatches = [], indexes = [], index, startIndex = -1, depth = 0;
+        var startRxp = srxp._getRegExp(start);
+        var endRxp = srxp._getRegExp(end);
+        var prev = this.result();
+        for (i = 0; i < prev.length; i++) {
+            while (match = startRxp.exec(prev[i])) {
+                startMatches.push(match);
+                indexes.push({
+                    type: "start",
+                    pos: match.index + match[0].length,
+                    end: 0
+                });
+            }
+            while (match = endRxp.exec(prev[i])) {
+                endMatches.push(match);
+                indexes.push({
+                    type: "end",
+                    pos: match.index
+                });
+            }
+            indexes.sort(function(a, b) {
+                return a.pos > b.pos;
+            });
+            for (j = 0; j < indexes.length; j++) {
+                index = indexes[j];
+                if (index.type === "start") {
+                    for (k = j + 1; k < indexes.length; k++) {
+                        if (indexes[k].type === "start") {
+                            depth++;
+                        } else if (indexes[k].type === "end") {
+                            if (depth === 0) {
+                                index.end = indexes[k].pos;
+                                break;
+                            } else {
+                                depth--;
+                            }
+                        }
+                    }
+                }
+            }
+            for (j = 0; j < indexes.length; j++) {
+                index = indexes[j];
+                if (index.type === "start") {
+                    match = prev[i].substring(index.pos, index.end);
+                    matches.push(match);
+                }
+            }
+        }
+        this._add(undefined, matches);
         return this;
     };
     srxp.prototype.exclude = function(pattern) {
-        var i, match, matches = [];
-        var rxp = new RegExp(pattern, "mg");
+        var i, matches = [];
+        var rxp = srxp._getRegExp(pattern);
         var prev = this.result();
         for (i = 0; i < prev.length; i++) {
             if (rxp.exec(prev[i]) === null) {
@@ -50,12 +97,11 @@ var exp = function() {
         this.matches.push(matches);
         this.depth++;
     };
-    srxp.ANY = "[\\s\\S]*?";
     srxp.simplify = function(text) {
-        text = text.replace(/[åäáàã]/g, "a");
-        text = text.replace(/[ÅÄÁÀÃ]/g, "A");
-        text = text.replace(/[éèẽæë]/g, "e");
-        text = text.replace(/[ÉÈẼÆË]/g, "E");
+        text = text.replace(/[åäáàãæ]/g, "a");
+        text = text.replace(/[ÅÄÁÀÃÆ]/g, "A");
+        text = text.replace(/[éèẽë]/g, "e");
+        text = text.replace(/[ÉÈẼË]/g, "E");
         text = text.replace(/[öõø]/g, "o");
         text = text.replace(/[ÖÕØ]/g, "O");
         text = text.replace(/[üũ]/g, "u");
@@ -68,12 +114,12 @@ var exp = function() {
         return text;
     };
     srxp.trim = function(text) {
-        text = text.replace(/^[\s|\t]*/g, "");
-        text = text.replace(/[\s|\t]*$/g, "");
+        text = text.replace(/^(\s|\t)*/g, "");
+        text = text.replace(/(\s|\t)*$/g, "");
         text = text.replace(/(\s|\t){2,}/g, " ");
         return text;
     };
-    srxp._cleanupPattern = function(pattern) {
+    srxp._getRegExp = function(pattern) {
         var rxp;
         if (pattern instanceof RegExp) {
             rxp = pattern;

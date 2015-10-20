@@ -65,11 +65,16 @@ describe('Simple Regexp', function(){
   });
 
   describe('between', function(){
-    it('simple strings ', function(){
+    it('should find matches between simple strings ', function(){
       var str = 'abcdefgabc';
-      assert.deepEqual(srxp(str).between('bc', 'gab').result(), ['def']);
-      assert.deepEqual(srxp(str).between('a', 'c').result(), ['b', 'b']);
+      //assert.deepEqual(srxp(str).between('bc', 'gab').result(), ['def']);
+      //assert.deepEqual(srxp(str).between('a', 'c').result(), ['b', 'b']);
+    });
 
+    it('should find match paranteses ', function(){
+      var str = 'a(b(c))(d)';
+      assert.deepEqual(srxp(str).between('\\(', '\\)').result(), ['b(c)', 'c', 'd']);
+      assert.deepEqual(srxp(str).between('b\\(', 'd\\)').result(), ['c))(']);
 
     });
   });
