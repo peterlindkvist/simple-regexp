@@ -46,6 +46,13 @@ describe('Simple Regexp', function(){
 
     });
 
+    it('multiple strings ', function(){
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).match('abcd', 'ef').result(), ['abcd', 'ef']);
+      assert.deepEqual(srxp(str).match('abc', 'ef').result(), ['abc', 'abc', 'ef']);
+
+    });
+
     it('simple regexp ', function(){
       var str = 'abcdefgabc';
       assert.deepEqual(srxp(str).match(/abc/g).result(), ['abc', 'abc']);

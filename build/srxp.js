@@ -16,17 +16,19 @@ var exp = function() {
     srxp.prototype.result = function() {
         return this.matches[this.depth - 1];
     };
-    srxp.prototype.match = function(pattern) {
-        var i, j, match, matches = [];
-        var rxp = srxp._getRegExp(pattern);
-        var prev = this.result();
-        for (i = 0; i < prev.length; i++) {
-            while (match = rxp.exec(prev[i])) {
-                if (match.length === 1) {
-                    matches.push(match[0]);
-                } else {
-                    for (j = 1; j < match.length; j++) {
-                        matches.push(match[j]);
+    srxp.prototype.match = function() {
+        var i, j, k, match, matches = [], rxp, prev;
+        for (k = 0; k < arguments.length; k++) {
+            rxp = srxp._getRegExp(arguments[k]);
+            prev = this.result();
+            for (i = 0; i < prev.length; i++) {
+                while (match = rxp.exec(prev[i])) {
+                    if (match.length === 1) {
+                        matches.push(match[0]);
+                    } else {
+                        for (j = 1; j < match.length; j++) {
+                            matches.push(match[j]);
+                        }
                     }
                 }
             }
