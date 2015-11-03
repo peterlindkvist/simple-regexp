@@ -86,6 +86,40 @@ describe('Simple Regexp', function(){
     });
   });
 
+  describe('replace', function(){
+    it('should replace strings ', function(){
+      var str = 'abcdefg';
+      assert.deepEqual(srxp(str).replace('ABC').text(), 'ABC');
+      assert.deepEqual(srxp(str).between('a', 'f').replace('R').text(), 'aRfg');
+      assert.deepEqual(srxp(str).between('a', 'f').replace('R').matches(), ['R']);
+
+
+    });
+
+    it('should replace multiple strings ', function(){
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).between('a', 'c').replace('R').text(), 'aRcdefgaRc');
+    });
+
+    it('should replace multiple strings using function ', function(){
+      var str = 'abcdefgaqc';
+      var funct = function(char){
+        return char.toUpperCase();
+      };
+      assert.deepEqual(srxp(str).between('a', 'c').replace(funct).text(), 'aBcdefgaQc');
+
+
+    });
+
+    it('should replace multiple strings with array ', function(){
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).between('a', 'c').replace(['1', '2']).text(), 'a1cdefga2c');
+      assert.deepEqual(srxp(str).between('a', 'c').replace(['1']).text(), 'a1cdefgabc');
+      assert.deepEqual(srxp(str).between('a', 'c').replace(['1', '2', '3']).text(), 'a1cdefga2c');
+    });
+
+  });
+
   describe('between', function(){
     it('should find matches between simple strings ', function(){
       var str = 'abcdefgabc';
@@ -93,7 +127,7 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp(str).between('a', 'c').matches(), ['b', 'b']);
     });
 
-    it('should find match paranteses ', function(){
+    it('should match paranteses ', function(){
       var str = 'a(b(c))(d)';
       assert.deepEqual(srxp(str).between('(', ')').matches(), ['b(c)', 'c', 'd']);
       assert.deepEqual(srxp(str).between('b(', 'd)').matches(), ['c))(']);

@@ -7,23 +7,23 @@ var exp = function() {
         }
     };
     srxp.prototype.init = function(source) {
-        var i, text = source instanceof Array ? source : [ source ];
+        var i, text = source;
         this.source = source;
         this._depth = 1;
         this._stack = [ {
-            match: [],
+            match: [ {
+                text: text,
+                start: 0,
+                length: text.length
+            } ],
             text: text
         } ];
-        for (i = 0; i < text.length; i++) {
-            this._stack[0].match[i] = {
-                text: text[i],
-                start: 0,
-                length: text[i].length
-            };
-        }
     };
     srxp.prototype.matches = function() {
         return srxp.pluck(this._stack[this._depth - 1].match, "text");
+    };
+    srxp.prototype.text = function() {
+        return this._stack[this._depth - 1].text;
     };
     srxp.prototype.match = function() {
         var i, j, k, match, matches = [], rxp, prev;
@@ -65,18 +65,18 @@ var exp = function() {
             while (match = startRxp.exec(prev[i])) {
                 indexes.push({
                     type: "start",
-                    pos: match.index + match[0].length,
+                    start: match.index + match[0].length,
                     end: 0
                 });
             }
             while (match = endRxp.exec(prev[i])) {
                 indexes.push({
                     type: "end",
-                    pos: match.index
+                    start: match.index
                 });
             }
             indexes.sort(function(a, b) {
-                return a.pos > b.pos;
+                return a.start > b.start;
             });
             for (j = 0; j < indexes.length; j++) {
                 index = indexes[j];
@@ -86,7 +86,7 @@ var exp = function() {
                             depth++;
                         } else if (indexes[k].type === "end") {
                             if (depth === 0) {
-                                index.end = indexes[k].pos;
+                                index.end = indexes[k].start;
                                 break;
                             } else {
                                 depth--;
@@ -97,11 +97,11 @@ var exp = function() {
             }
             for (j = 0; j < indexes.length; j++) {
                 index = indexes[j];
-                if (index.type === "start" && index.pos < index.end) {
-                    match = prev[i].substring(index.pos, index.end);
+                if (index.type === "start" && index.start < index.end) {
+                    match = prev[i].substring(index.start, index.end);
                     matches.push({
                         text: match,
-                        start: index.pos,
+                        start: index.start,
                         length: match.length
                     });
                 }
@@ -109,6 +109,37 @@ var exp = function() {
         }
         this._add({
             match: matches
+        });
+        return this;
+    };
+    srxp.prototype.replace = function(replace) {
+        var t, i, j, repl;
+        var text = this.text();
+        var prev = this._stack[this._depth - 1].match;
+        var match = [];
+        prev.sort(function(a, b) {
+            return a.start > b.start;
+        });
+        for (i = prev.length - 1; i >= 0; i--) {
+            if (typeof replace === "string") {
+                repl = replace;
+                text = srxp.stringSplice(text, prev[i].start, prev[i].length, repl);
+            } else if (replace instanceof Function) {
+                repl = replace.call(null, prev[i].text, prev[i].start, prev[i].length);
+                text = srxp.stringSplice(text, prev[i].start, prev[i].length, repl);
+            } else if (replace instanceof Array) {
+                repl = replace[i] === undefined ? prev[i].text : replace[i];
+                text = srxp.stringSplice(text, prev[i].start, prev[i].length, repl);
+            }
+            match.push({
+                text: repl,
+                start: prev[i].start,
+                length: repl.length
+            });
+        }
+        this._add({
+            match: match,
+            text: text
         });
         return this;
     };
@@ -141,6 +172,12 @@ var exp = function() {
         return this;
     };
     srxp.prototype._add = function(properties) {
+        if (properties.text === undefined) {
+            properties.text = this._stack[this._depth - 1].text;
+        }
+        if (properties.length === undefined) {
+            properties.length = properties.match.length;
+        }
         this._stack.push(properties);
         this._depth++;
     };
@@ -193,6 +230,9 @@ var exp = function() {
             ret.push(arr[i][property]);
         }
         return ret;
+    };
+    srxp.stringSplice = function(text, start, length, insert) {
+        return text.slice(0, start) + insert + text.slice(start + length);
     };
     return srxp;
 }();
