@@ -8,19 +8,21 @@ var exp = function() {
     };
     srxp.prototype.init = function(source) {
         this.source = source;
-        this.depth = 1;
-        this.matches = [];
-        this.regExps = [];
-        this.matches.push([ this.source ]);
+        this._texts = [];
+        this._depth = 1;
+        this._matches = [];
+        this._regExps = [];
+        this._texts.push(this._texts);
+        this._matches.push([ this.source ]);
     };
-    srxp.prototype.result = function() {
-        return this.matches[this.depth - 1];
+    srxp.prototype.matches = function() {
+        return this._matches[this._depth - 1];
     };
     srxp.prototype.match = function() {
         var i, j, k, match, matches = [], rxp, prev;
+        prev = this.matches();
         for (k = 0; k < arguments.length; k++) {
             rxp = srxp._getRegExp(arguments[k]);
-            prev = this.result();
             for (i = 0; i < prev.length; i++) {
                 while (match = rxp.exec(prev[i])) {
                     if (match.length === 1) {
@@ -40,7 +42,7 @@ var exp = function() {
         var i, j, k, match, matches = [], indexes = [], index, depth = 0;
         var startRxp = srxp._getRegExp(start);
         var endRxp = srxp._getRegExp(end);
-        var prev = this.result();
+        var prev = this.matches();
         for (i = 0; i < prev.length; i++) {
             while (match = startRxp.exec(prev[i])) {
                 indexes.push({
@@ -89,7 +91,7 @@ var exp = function() {
     srxp.prototype.exclude = function(pattern) {
         var i, matches = [];
         var rxp = srxp._getRegExp(pattern);
-        var prev = this.result();
+        var prev = this.matches();
         for (i = 0; i < prev.length; i++) {
             if (rxp.exec(prev[i]) === null) {
                 matches.push(prev[i]);
@@ -98,10 +100,23 @@ var exp = function() {
         this._add(null, matches);
         return this;
     };
-    srxp.prototype._add = function(rxp, matches) {
-        this.regExps.push(rxp);
-        this.matches.push(matches);
-        this.depth++;
+    srxp.prototype.include = function(pattern) {
+        var i, matches = [];
+        var rxp = srxp._getRegExp(pattern);
+        var prev = this.matches();
+        for (i = 0; i < prev.length; i++) {
+            if (rxp.exec(prev[i]) !== null) {
+                matches.push(prev[i]);
+            }
+        }
+        this._add(null, matches);
+        return this;
+    };
+    srxp.prototype._add = function(rxp, matches, text) {
+        this._regExps.push(rxp);
+        this._matches.push(matches);
+        this._texts.push(text);
+        this._depth++;
     };
     srxp.simplify = function(text) {
         text = text.replace(/[åäáàãæ]/g, "a");
