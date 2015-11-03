@@ -158,8 +158,27 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp(str).word().matches(), ['abcd',  'aBcd', 'abcd']);
       assert.deepEqual(srxp('abc').word().matches(), ['abc']);
     });
+
+    it('should find words in multilie string', function(){
+      var str = "abcd \naBcd. \rabcd";
+      assert.deepEqual(srxp(str).word().matches(), ['abcd',  'aBcd', 'abcd']);
+    });
   });
 
+  describe('size', function(){
+    it('should find words in string', function(){
+      var str = 'abcd abc abcd';
+      assert.deepEqual(srxp(str).word().size(2).matches(), []);
+      assert.deepEqual(srxp(str).word().size(3).matches(), ['abc']);
+      assert.deepEqual(srxp(str).word().size(4).matches(), ['abcd', 'abcd']);
+      assert.deepEqual(srxp(str).word().size(5).matches(), []);
+      assert.deepEqual(srxp(str).word().size(4,6).matches(), ['abcd', 'abcd']);
+      assert.deepEqual(srxp(str).word().size(undefined, 3).matches(), ['abc']);
+
+    });
+
+
+  });
 
 
   describe('chaining', function(){

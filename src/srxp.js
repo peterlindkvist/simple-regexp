@@ -199,6 +199,25 @@ var exp = (function(){
     return this;
   };
 
+  srxp.prototype.size = function(atLeast, atMost){
+    atLeast = atLeast === undefined ? 0 : atLeast;
+    atMost = atMost === undefined ? atLeast : atMost;
+
+    var i, len, matches = [];
+    var prev = this._stack[this._depth - 1].match;
+
+    for(i = 0; i < prev.length ; i++){
+      len = prev[i].text.length;
+      if(len >= atLeast && len <= atMost){
+        matches.push(prev[i]);
+      }
+    }
+
+    this._add({match : matches});
+
+    return this;
+  };
+
   srxp.prototype._add = function(properties){
     if(properties.text === undefined){
       properties.text = this._stack[this._depth - 1].text;
