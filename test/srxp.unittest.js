@@ -152,6 +152,15 @@ describe('Simple Regexp', function(){
     });
   });
 
+  describe('word', function(){
+    it('should find words in string', function(){
+      var str = 'abcd aBcd abcd';
+      assert.deepEqual(srxp(str).word().matches(), ['abcd',  'aBcd', 'abcd']);
+      assert.deepEqual(srxp('abc').word().matches(), ['abc']);
+    });
+  });
+
+
 
   describe('chaining', function(){
      it('should match chain searches', function(){

@@ -26,11 +26,12 @@ var exp = function() {
         return this._stack[this._depth - 1].text;
     };
     srxp.prototype.match = function() {
-        var i, j, k, match, matches = [], rxp, prev;
+        var i, j, k, match, matches = [], rxp, prev, cnt;
         prev = this.matches();
         for (k = 0; k < arguments.length; k++) {
             rxp = srxp._getRegExp(arguments[k]);
             for (i = 0; i < prev.length; i++) {
+                cnt = 0;
                 while (match = rxp.exec(prev[i])) {
                     if (match.length === 1) {
                         matches.push({
@@ -46,6 +47,10 @@ var exp = function() {
                                 length: match[j].length
                             });
                         }
+                    }
+                    if (cnt++ > 1e3) {
+                        console.error("infinity loop");
+                        break;
                     }
                 }
             }
@@ -171,12 +176,14 @@ var exp = function() {
         });
         return this;
     };
+    srxp.prototype.word = function() {
+        var rxp = /[\w]{1,}/g;
+        this.match(rxp);
+        return this;
+    };
     srxp.prototype._add = function(properties) {
         if (properties.text === undefined) {
             properties.text = this._stack[this._depth - 1].text;
-        }
-        if (properties.length === undefined) {
-            properties.length = properties.match.length;
         }
         this._stack.push(properties);
         this._depth++;

@@ -32,7 +32,7 @@ var exp = (function(){
   };
 
   srxp.prototype.match = function(/*...patterns*/){
-    var i, j, k, match, matches = [], rxp, prev;
+    var i, j, k, match, matches = [], rxp, prev, cnt;
     prev = this.matches();
 
     for(k = 0 ; k < arguments.length ; k++){
@@ -40,6 +40,7 @@ var exp = (function(){
 
       //loop the previous results and find matches.
       for(i = 0; i < prev.length ; i++){
+        cnt = 0;
         while(match = rxp.exec(prev[i])){ // jshint ignore:line
           if(match.length === 1){
             matches.push({text : match[0], start : match.pos, length : match[0].length});
@@ -48,6 +49,10 @@ var exp = (function(){
             for(j = 1 ; j < match.length ; j ++){
               matches.push({text : match[j], start : match.pos, length : match[j].length});
             }
+          }
+          if(cnt ++ > 1000){
+            console.error('infinity loop');
+            break;
           }
         }
       }
@@ -187,12 +192,16 @@ var exp = (function(){
     return this;
   };
 
+  srxp.prototype.word = function(){
+    var rxp = /[\w]{1,}/g;
+    this.match(rxp);
+
+    return this;
+  };
+
   srxp.prototype._add = function(properties){
     if(properties.text === undefined){
       properties.text = this._stack[this._depth - 1].text;
-    }
-    if(properties.length === undefined){
-      properties.length = properties.match.length;
     }
     this._stack.push(properties);
 
