@@ -7,16 +7,23 @@ var exp = function() {
         }
     };
     srxp.prototype.init = function(source) {
+        var i, text = source instanceof Array ? source : [ source ];
         this.source = source;
-        this._texts = [];
         this._depth = 1;
-        this._matches = [];
-        this._regExps = [];
-        this._texts.push(this._texts);
-        this._matches.push([ this.source ]);
+        this._stack = [ {
+            match: [],
+            text: text
+        } ];
+        for (i = 0; i < text.length; i++) {
+            this._stack[0].match[i] = {
+                text: text[i],
+                start: 0,
+                length: text[i].length
+            };
+        }
     };
     srxp.prototype.matches = function() {
-        return this._matches[this._depth - 1];
+        return srxp.pluck(this._stack[this._depth - 1].match, "text");
     };
     srxp.prototype.match = function() {
         var i, j, k, match, matches = [], rxp, prev;
@@ -26,16 +33,27 @@ var exp = function() {
             for (i = 0; i < prev.length; i++) {
                 while (match = rxp.exec(prev[i])) {
                     if (match.length === 1) {
-                        matches.push(match[0]);
+                        matches.push({
+                            text: match[0],
+                            start: match.pos,
+                            length: match[0].length
+                        });
                     } else {
                         for (j = 1; j < match.length; j++) {
-                            matches.push(match[j]);
+                            matches.push({
+                                text: match[j],
+                                start: match.pos,
+                                length: match[j].length
+                            });
                         }
                     }
                 }
             }
         }
-        this._add(rxp, matches);
+        this._add({
+            regex: rxp,
+            match: matches
+        });
         return this;
     };
     srxp.prototype.between = function(start, end) {
@@ -81,41 +99,49 @@ var exp = function() {
                 index = indexes[j];
                 if (index.type === "start" && index.pos < index.end) {
                     match = prev[i].substring(index.pos, index.end);
-                    matches.push(match);
+                    matches.push({
+                        text: match,
+                        start: index.pos,
+                        length: match.length
+                    });
                 }
             }
         }
-        this._add(undefined, matches);
+        this._add({
+            match: matches
+        });
         return this;
     };
     srxp.prototype.exclude = function(pattern) {
         var i, matches = [];
         var rxp = srxp._getRegExp(pattern);
-        var prev = this.matches();
+        var prev = this._stack[this._depth - 1].match;
         for (i = 0; i < prev.length; i++) {
-            if (rxp.exec(prev[i]) === null) {
+            if (rxp.exec(prev[i].text) === null) {
                 matches.push(prev[i]);
             }
         }
-        this._add(null, matches);
+        this._add({
+            match: matches
+        });
         return this;
     };
     srxp.prototype.include = function(pattern) {
         var i, matches = [];
         var rxp = srxp._getRegExp(pattern);
-        var prev = this.matches();
+        var prev = this._stack[this._depth - 1].match;
         for (i = 0; i < prev.length; i++) {
-            if (rxp.exec(prev[i]) !== null) {
+            if (rxp.exec(prev[i].text) !== null) {
                 matches.push(prev[i]);
             }
         }
-        this._add(null, matches);
+        this._add({
+            match: matches
+        });
         return this;
     };
-    srxp.prototype._add = function(rxp, matches, text) {
-        this._regExps.push(rxp);
-        this._matches.push(matches);
-        this._texts.push(text);
+    srxp.prototype._add = function(properties) {
+        this._stack.push(properties);
         this._depth++;
     };
     srxp.simplify = function(text) {
@@ -160,6 +186,13 @@ var exp = function() {
             rxp = new RegExp(pattern, "mg");
         }
         return rxp;
+    };
+    srxp.pluck = function(arr, property) {
+        var i, ret = [];
+        for (i = 0; i < arr.length; i++) {
+            ret.push(arr[i][property]);
+        }
+        return ret;
     };
     return srxp;
 }();
