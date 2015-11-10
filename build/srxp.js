@@ -1,13 +1,14 @@
 var exp = function() {
-    var srxp = function(source) {
+    var srxp = function(source, trim) {
         if (srxp === this.constructor) {
-            this.init(source);
+            this.init(source, trim);
         } else {
-            return new srxp(source);
+            return new srxp(source, trim);
         }
     };
-    srxp.prototype.init = function(source) {
-        var i, text = source;
+    srxp.prototype.init = function(source, trim) {
+        trim = trim === undefined ? false : trim;
+        var i, text = trim ? srxp.trim(source) : source;
         this.source = source;
         this._depth = 1;
         this._stack = [ {
@@ -32,26 +33,17 @@ var exp = function() {
             rxp = srxp._getRegExp(arguments[k]);
             for (i = 0; i < prev.length; i++) {
                 cnt = 0;
-                while (match = rxp.exec(prev[i])) {
-                    if (match.length === 1) {
-                        matches.push({
-                            text: match[0],
-                            start: match.pos,
-                            length: match[0].length
-                        });
-                    } else {
-                        for (j = 1; j < match.length; j++) {
-                            matches.push({
-                                text: match[j],
-                                start: match.pos,
-                                length: match[j].length
-                            });
+                if (rxp.global) {
+                    while (match = rxp.exec(prev[i])) {
+                        matches = matches.concat(srxp._parseMatch(match));
+                        if (cnt++ > 1e5) {
+                            console.error("infinity loop");
+                            break;
                         }
                     }
-                    if (cnt++ > 1e3) {
-                        console.error("infinity loop");
-                        break;
-                    }
+                } else {
+                    match = prev[i].match(rxp);
+                    matches = matches.concat(srxp._parseMatch(match));
                 }
             }
         }
@@ -153,7 +145,7 @@ var exp = function() {
         var rxp = srxp._getRegExp(pattern);
         var prev = this._stack[this._depth - 1].match;
         for (i = 0; i < prev.length; i++) {
-            if (rxp.exec(prev[i].text) === null) {
+            if (prev[i].text.search(rxp) === -1) {
                 matches.push(prev[i]);
             }
         }
@@ -167,7 +159,7 @@ var exp = function() {
         var rxp = srxp._getRegExp(pattern);
         var prev = this._stack[this._depth - 1].match;
         for (i = 0; i < prev.length; i++) {
-            if (rxp.exec(prev[i].text) !== null) {
+            if (prev[i].text.search(rxp) !== -1) {
                 matches.push(prev[i]);
             }
         }
@@ -177,7 +169,7 @@ var exp = function() {
         return this;
     };
     srxp.prototype.word = function() {
-        var rxp = /[\w]{1,}/g;
+        var rxp = /[\w]+/g;
         this.match(rxp);
         return this;
     };
@@ -217,7 +209,7 @@ var exp = function() {
         return text;
     };
     srxp.expandPattern = function(text) {
-        text = text.replace(/\s{1,}/g, "\\s{1,}");
+        text = text.replace(/\s+/g, "\\s+");
         return text;
     };
     srxp.escape = function(text) {
@@ -225,9 +217,9 @@ var exp = function() {
         return text;
     };
     srxp.trim = function(text) {
-        text = text.replace(/^(\s|\t)*/g, "");
-        text = text.replace(/(\s|\t)*$/g, "");
-        text = text.replace(/(\s|\t){2,}/g, " ");
+        text = text.replace(/^(\s)*/g, "");
+        text = text.replace(/(\s)*$/g, "");
+        text = text.replace(/(\s){2,}/g, " ");
         return text;
     };
     srxp._getRegExp = function(pattern, escape, expand) {
@@ -246,6 +238,25 @@ var exp = function() {
             rxp = new RegExp(pattern, "mg");
         }
         return rxp;
+    };
+    srxp._parseMatch = function(match) {
+        var matches = [];
+        if (match.length === 1) {
+            matches.push({
+                text: match[0],
+                start: match.index,
+                length: match[0].length
+            });
+        } else {
+            for (j = 1; j < match.length; j++) {
+                matches.push({
+                    text: match[j],
+                    start: match.index,
+                    length: match[j].length
+                });
+            }
+        }
+        return matches;
     };
     srxp.pluck = function(arr, property) {
         var i, ret = [];

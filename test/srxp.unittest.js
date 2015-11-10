@@ -37,9 +37,10 @@ describe('Simple Regexp', function(){
   describe('expandPattern', function(){
 
     it('should add regexp for multiple spaces', function(){
-      assert.equal(srxp.expandPattern('a b'), 'a\\s{1,}b');
-      assert.equal(srxp.expandPattern('a   b'), 'a\\s{1,}b');
-      assert.equal(srxp.expandPattern('a   b c'), 'a\\s{1,}b\\s{1,}c');
+      assert.equal(srxp.expandPattern('a b'), 'a\\s+b');
+      assert.equal(srxp.expandPattern('a   b'), 'a\\s+b');
+      assert.equal(srxp.expandPattern('a   b c'), 'a\\s+b\\s+c');
+      assert.equal(srxp.expandPattern('a  \n \t b  \rc'), 'a\\s+b\\s+c');
     });
   });
 
@@ -59,14 +60,22 @@ describe('Simple Regexp', function(){
 
     });
 
-    it('should find a match with regexp ', function(){
+    it('should find a match with global regexp ', function(){
       var str = 'abcdefgabc';
       assert.deepEqual(srxp(str).match(/abc/g).matches(), ['abc', 'abc']);
       assert.deepEqual(srxp(str).match(/a|b/g).matches(), ['a', 'b', 'a', 'b']);
       assert.deepEqual(srxp(str).match(/cde/g).matches(), ['cde']);
       assert.notDeepEqual(srxp(str).match(/cde/g).matches(), ['cdde']);
-      assert.notDeepEqual(srxp(str).match(/cde/g).matches(), ['cdde']);
 
+    });
+
+    it('should find a match with non global regexp ', function(){
+      var str = 'abcdefgabc';
+      assert.deepEqual(srxp(str).match(/abc/).matches(), ['abc']);
+      assert.deepEqual(srxp(str).match(/a|b/).matches(), ['a']);
+      assert.deepEqual(srxp(str).match(/cd(e)/).matches(), ['e']);
+      assert.deepEqual(srxp(str).match(/(cd(e))/).matches(), ['cde', 'e']);
+      assert.notDeepEqual(srxp(str).match(/cde/).matches(), ['cdde']);
     });
 
     it('should find matches in a grouped regexp ', function(){
@@ -159,7 +168,7 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp('abc').word().matches(), ['abc']);
     });
 
-    it('should find words in multilie string', function(){
+    it('should find words in multiline string', function(){
       var str = "abcd \naBcd. \rabcd";
       assert.deepEqual(srxp(str).word().matches(), ['abcd',  'aBcd', 'abcd']);
     });
@@ -186,6 +195,7 @@ describe('Simple Regexp', function(){
        var str = ('abcdefghi def');
        assert.deepEqual(srxp(str).match('def').match('def').matches(), ['def', 'def']);
        assert.deepEqual(srxp(str).match('cdefg').match('def').matches(), ['def']);
+
      });
 
     it('should match chain searches with between', function(){
@@ -194,5 +204,46 @@ describe('Simple Regexp', function(){
       assert.deepEqual(srxp(str).between('a', ' def').between('c', 'i').match('ef').matches(), ['ef']);
 
     });
+  });
+
+  describe('examples in readme', function(){
+     it('should find some words in a sentence', function(){
+       assert.deepEqual(srxp('hi this is a simple text').word().include('s').matches(), ['this', 'is', 'simple']);
+     });
+
+     it('should find links in html', function(){
+       var html = '<a href="link1.html">link1</a> <a href="link2.html" rel="nofollow">link2</a>  <a rel="nofollow" href="link3.html">link3</a>';
+       var matches = srxp(html).between('<a', '>').exclude('rel="nofollow"').between('href="', '"').matches();
+       assert.deepEqual(matches, ['link1.html']);
+     });
+
+    it('should replace a pattern', function(){
+      assert.deepEqual(srxp('where is my dog?').match('dog').replace('cat').text(), 'where is my cat?');
+    });
+
+    it('should pass examples in .between', function(){
+      assert.deepEqual(srxp('a (b c (d) e)').between('(', ')').matches(), ['b c (d) e', 'd']);
+    });
+
+    it('should pass examples in .match', function(){
+      assert.deepEqual(srxp('ab bb cb cc').match('ab', 'cb').matches(), ['ab', 'cb']);
+      assert.deepEqual(srxp('ab bb cb cc').match(/.b/g).match(/c./g).matches(), ['cb']);
+    });
+
+    it('should pass examples in .replace', function(){
+      assert.deepEqual(srxp('abcdefghij').match('a', 'e', 'i').replace('VOWEL').text(), 'VOWELbcdVOWELfghVOWELj');
+      assert.deepEqual(srxp('abcdefghij').match(/[aei]/g).replace(['V1', 'V2']).text(), 'V1bcdV2fghij');
+
+      var replace = function(text, index, length){
+        return text.toUpperCase() + '@' + index;
+      };
+      assert.deepEqual(srxp('abcdefghij').match('a', 'e', 'i').replace(replace).text(), 'A@0bcdE@4fghI@8j');
+       //A@0bcdE@5fghI@10j
+
+    });
+
+
+
+
   });
 });
