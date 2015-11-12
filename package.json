@@ -3,21 +3,24 @@
   "description": "hello world test app",
   "version": "0.0.1",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "test": "grunt test",
+    "run": "grunt"
+  },
   "dependencies": {
-    "connect": "*",
+    "connect": "^3.4.0",
     "finalhandler": "^0.4.0",
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-develop": "*",
-    "serve-static": "*"
+    "grunt-develop": "^0.4.0",
+    "serve-static": "^1.10.0"
   },
   "devDependencies": {
-    "grunt-contrib-concat": "~0.5.0",
-    "grunt-contrib-jshint": "*",
+    "chai": "^3.4.1",
     "grunt": "~0.4.5",
-    "chai": "*",
-    "mocha": "*",
-    "grunt-mocha-test": "*"
+    "grunt-contrib-concat": "~0.5.0",
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.3.3"
   }
 }

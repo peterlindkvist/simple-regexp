@@ -3,3 +3,4 @@ simplerexp.iml
 build/srpx.js
 node_modules/
 .DS_Store
+tmp/
