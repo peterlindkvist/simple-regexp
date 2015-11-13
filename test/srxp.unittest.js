@@ -207,15 +207,15 @@ describe('Simple Regexp', function(){
   });
 
   describe('examples in readme', function(){
-     it('should find some words in a sentence', function(){
-       assert.deepEqual(srxp('hi this is a simple text').word().include('s').matches(), ['this', 'is', 'simple']);
-     });
+    it('should find some words in a sentence', function(){
+      assert.deepEqual(srxp('hi this is a simple text').word().include('s').matches(), ['this', 'is', 'simple']);
+    });
 
-     it('should find links in html', function(){
-       var html = '<a href="link1.html">link1</a> <a href="link2.html" rel="nofollow">link2</a>  <a rel="nofollow" href="link3.html">link3</a>';
-       var matches = srxp(html).between('<a', '>').exclude('rel="nofollow"').between('href="', '"').matches();
-       assert.deepEqual(matches, ['link1.html']);
-     });
+    it('should find links in html', function(){
+      var html = '<a href="link1.html">link1</a> <a href="link2.html" rel="nofollow">link2</a>  <a rel="nofollow" href="link3.html">link3</a>';
+      var matches = srxp(html).between('<a', '>').exclude('rel="nofollow"').between('href="', '"').matches();
+      assert.deepEqual(matches, ['link1.html']);
+    });
 
     it('should replace a pattern', function(){
       assert.deepEqual(srxp('where is my dog?').match('dog').replace('cat').text(), 'where is my cat?');
@@ -238,8 +238,6 @@ describe('Simple Regexp', function(){
         return text.toUpperCase() + '@' + index;
       };
       assert.deepEqual(srxp('abcdefghij').match('a', 'e', 'i').replace(replace).text(), 'A@0bcdE@4fghI@8j');
-       //A@0bcdE@5fghI@10j
-
     });
 
 

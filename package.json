@@ -1,21 +1,34 @@
 {
-  "name": "simpleregexp",
-  "description": "hello world test app",
-  "version": "0.0.1",
-  "private": true,
+  "name": "simple-regexp",
+  "description": "This is a wrapper for regular expressions to simplify text search and replacements.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/peterlindkvist/simple-regexp",
   "scripts": {
     "test": "grunt test",
-    "run": "grunt"
+    "start": "grunt"
   },
-  "dependencies": {
+  "main" : "build/srxp.js",
+  "keywords": [
+    "regular expressions",
+    "regexp",
+    "regex",
+    "text search",
+    "search"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:peterlindkvist/simple-regexp.git"
+  },
+  "files": [
+    "build/srxp.js"
+  ],
+  "devDependencies": {
     "connect": "^3.4.0",
     "finalhandler": "^0.4.0",
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-develop": "^0.4.0",
-    "serve-static": "^1.10.0"
-  },
-  "devDependencies": {
+    "serve-static": "^1.10.0",
     "chai": "^3.4.1",
     "grunt": "~0.4.5",
     "grunt-contrib-concat": "~0.5.0",
