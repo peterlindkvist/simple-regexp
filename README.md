@@ -14,7 +14,7 @@ or finds all links in a html document without rel="nofollow"
     
 or do a text replacement
 
-    srxp('where is my dog?').size(/dog/g).replace('cat').text(); //where is my cat?
+    srxp('where is my dog?').match(/dog/g).replace('cat').text(); //where is my cat?
 
 
 ## API
@@ -90,9 +90,9 @@ newValue can also be a array and the replaces are user from the array.
     
 Or a function. 
 
-	var replace = function(text, index, length){
-		return text.toUpperCase() + '@' + index;
-	};
+    var replace = function(text, index, length){
+        return text.toUpperCase() + '@' + index;
+    };
     srxp('abcdefghij').match(/[aei]/g).replace(replace).text() //A@0bcdE@4fghI@8j
 
 ### .size(atLeast, atMost)

@@ -1,19 +1,15 @@
 module.exports = function(grunt) {
-src = 'src';
 
 grunt.initConfig({
 
- jshint: {
-  options: {
-    curly: true,
-    eqeqeq: true,
-    eqnull: true,
-    browser: true,
-    globals: {
-      jQuery: true
-    }
-  },
-    all: ['Gruntfile.js', src + '/*.js', './test/**/*.js']
+  jshint: {
+    options: {
+      curly: true,
+      eqeqeq: true,
+      eqnull: true,
+      browser: true
+    },
+    all: ['Gruntfile.js', 'src/*.js', './test/**/*.js']
   },
 
   develop: {
@@ -28,7 +24,7 @@ grunt.initConfig({
   watch: {
     js: {
       files: ['app.js', 'src/*.js', 'test/*.js'],
-      tasks: ['jshint', 'uglify', 'mochaTest', 'develop'],
+      tasks: ['default', 'develop'],
       options: {
         nospawn: true
       }
@@ -37,14 +33,9 @@ grunt.initConfig({
 
 
   uglify: {
-    options: {
-      mangle: false,
-      compress : false,
-      beautify : true
-    },
     target: {
       files: {
-        'build/srxp.js': [src + '/*.js']
+        'dist/srxp.js': ['src/*.js']
       }
     }
   },
@@ -64,7 +55,8 @@ grunt.loadNpmTasks('grunt-develop');
 grunt.loadNpmTasks('grunt-contrib-jshint');
 grunt.loadNpmTasks('grunt-mocha-test');
 
-grunt.registerTask('default', ['jshint', 'uglify', 'mochaTest', 'develop', 'watch']);
-grunt.registerTask('test', ['jshint', 'mochaTest', 'uglify']);
+grunt.registerTask('default', ['jshint', 'uglify']);
+grunt.registerTask('start', ['default', 'test', 'develop', 'watch']);
+grunt.registerTask('test', ['default', 'mochaTest']);
 
 };

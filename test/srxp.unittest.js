@@ -1,6 +1,6 @@
 /// <reference path="../../assets/js/tundra.js" />
 var assert = require('chai').assert;
-var srxp = require('../src/srxp.js');
+var srxp = require('../dist/srxp.js');
 
 describe('Simple Regexp', function(){
   describe('simplify', function(){
