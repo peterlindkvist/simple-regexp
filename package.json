@@ -10,7 +10,8 @@
     "regexp",
     "regex",
     "text search",
-    "search"
+    "search",
+    "string match"
   ],
   "repository": {
     "type": "git",
@@ -21,7 +22,7 @@
     "test": "grunt test",
     "watch": "grunt run"
   },
-  "main": "build/srxp.js",
+  "main": "dist/srxp.js",
   "files": [
     "dist/srxp.js"
   ],

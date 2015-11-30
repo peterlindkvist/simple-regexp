@@ -16,6 +16,10 @@ or do a text replacement
 
     srxp('where is my dog?').match(/dog/g).replace('cat').text(); //where is my cat?
 
+## Installation
+
+    npm install simple-regexp
+
 
 ## API
 
@@ -29,7 +33,7 @@ Strings are converted before turned into a regular expression. Single spaces are
 RegExp are used as they are with flags.  
 
 #### Chaining
-srxp instances are chainable to make it simple to write complex searches in a easy and understandable way. Se examples above.
+srxp instances are chainable to make it simple to write complex searches in a easy and understandable way. See examples above.
 
 ### srxp(text)                        
 
@@ -52,7 +56,7 @@ It might be possible with recursive regexp, ?R, but it's not supported in js.
 
 Exclude matches with pattern
 
-    srxp('abcd aBcd abcd').between('a','d').include('B').matches();  //['bc', 'bc']
+    srxp('abcd aBcd abcd').between('a','d').exclude('B').matches();  //['bc', 'bc']
 
 ### .include(pattern)
 
@@ -119,9 +123,13 @@ Returns a string with spaces, tabs and newlines removed from start and end of th
 ## Development
 
 - `npm install` to install dependencies
-- `grunt start` to build, start development server and watch for changes
+- `grunt run` to build, start development server and watch for changes
 
-To test the script in a browser run `grunt start` and then navigate to ['data:text/html,<html><script type="text/javascript" src="http://localhost:8888/srxp.js"></script></html>'](data:text/html,<html><script type="text/javascript" src="http://localhost:8888/srxp.js"></script></html>) 
+To test the script in a browser run `grunt run` and then in your browser navigate to 
+    
+    data:text/html,<html><script type="text/javascript" src="http://localhost:8888/srxp.js"></script></html>
+   
+And do the testing in the developer console.
 
 ## Test
 
