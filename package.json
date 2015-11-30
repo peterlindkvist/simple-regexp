@@ -1,7 +1,7 @@
 {
   "name": "simple-regexp",
   "title": "Simple Regular Expression",
-  "description": "This is a wrapper for regular expressions to simplify text search and replacements.",
+  "description": "A chainable regular expression wrapper for text search and replacements.",
   "version": "0.1.0",
   "homepage": "https://github.com/peterlindkvist/simple-regexp",
   "license": "MIT",
@@ -19,26 +19,22 @@
   "scripts": {
     "build": "npm install && grunt",
     "test": "grunt test",
-    "start": "grunt start"
+    "watch": "grunt run"
   },
   "main": "build/srxp.js",
   "files": [
-    "build/srxp.js"
+    "dist/srxp.js"
   ],
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.4.1",
-    "connect": "^3.4.0",
-    "finalhandler": "^0.4.0",
     "grunt": "~0.4.5",
     "grunt-contrib-concat": "~0.5.0",
     "grunt-contrib-jshint": "^0.11.3",
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.6.1",
-    "grunt-develop": "^0.4.0",
+    "grunt-devserver": "^0.6.0",
     "grunt-mocha-test": "^0.12.7",
-    "jquery": "*",
-    "mocha": "^2.3.3",
-    "serve-static": "^1.10.0"
+    "mocha": "^2.3.3"
   }
 }

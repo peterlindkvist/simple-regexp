@@ -12,19 +12,18 @@ grunt.initConfig({
     all: ['Gruntfile.js', 'src/*.js', './test/**/*.js']
   },
 
-  develop: {
+  devserver: {
     server: {
-      file: 'app.js',
-      env: { 
-        NODE_ENV: 'development'
-      }  
+      options: {
+        base : 'dist'
+      }
     }
   },
 
   watch: {
     js: {
-      files: ['app.js', 'src/*.js', 'test/*.js'],
-      tasks: ['default', 'develop'],
+      files: ['src/*.js', 'test/*.js'],
+      tasks: ['default', 'devserver'],
       options: {
         nospawn: true
       }
@@ -51,12 +50,12 @@ grunt.initConfig({
 
 grunt.loadNpmTasks('grunt-contrib-uglify');
 grunt.loadNpmTasks('grunt-contrib-watch');
-grunt.loadNpmTasks('grunt-develop');
 grunt.loadNpmTasks('grunt-contrib-jshint');
 grunt.loadNpmTasks('grunt-mocha-test');
+grunt.loadNpmTasks('grunt-devserver');
 
 grunt.registerTask('default', ['jshint', 'uglify']);
-grunt.registerTask('start', ['default', 'test', 'develop', 'watch']);
+grunt.registerTask('run', ['default', 'test', 'devserver', 'watch']);
 grunt.registerTask('test', ['default', 'mochaTest']);
 
 };

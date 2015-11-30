@@ -2,7 +2,7 @@
 
 ## Description
 
-A library for using complex regular expressions without the knowledge of regular expressions. Expressions are chainable to make the matching easier. 
+A chainable regular expression wrapper for text search and replacement.
 
 ## Examples
     
@@ -119,15 +119,16 @@ Returns a string with spaces, tabs and newlines removed from start and end of th
 ## Development
 
 - `npm install` to install dependencies
-- `grunt` to build, start development server and watch for changes
+- `grunt start` to build, start development server and watch for changes
+
+To test the script in a browser run `grunt start` and then navigate to ['data:text/html,<html><script type="text/javascript" src="http://localhost:8888/srxp.js"></script></html>'](data:text/html,<html><script type="text/javascript" src="http://localhost:8888/srxp.js"></script></html>) 
 
 ## Test
 
 There are some test coverage. It could of course be more comprehensive
 
     grunt test
-   
-   
+      
 
 
 
