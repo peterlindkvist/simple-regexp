@@ -54,9 +54,9 @@ grunt.initConfig({
       commitMessage: 'Release v%VERSION%',
       commitFiles: ['-a'],
       createTag: true,
-      tagName: '%VERSION%',
+      tagName: 'v%VERSION%',
       push: true,
-      pushTo: 'upstream'
+      pushTo: 'master'
     }
   }
 });
