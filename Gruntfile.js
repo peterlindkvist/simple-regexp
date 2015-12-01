@@ -56,7 +56,7 @@ grunt.initConfig({
       createTag: true,
       tagName: 'v%VERSION%',
       push: true,
-      pushTo: 'master'
+      pushTo: 'origin'
     }
   }
 });

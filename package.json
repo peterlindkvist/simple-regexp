@@ -2,7 +2,7 @@
   "name": "simple-regexp",
   "title": "Simple Regular Expression",
   "description": "A chainable regular expression wrapper for text search and replacements.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "homepage": "https://github.com/peterlindkvist/simple-regexp",
   "license": "MIT",
   "keywords": [
