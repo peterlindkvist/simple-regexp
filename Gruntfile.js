@@ -67,6 +67,7 @@ grunt.loadNpmTasks('grunt-contrib-watch');
 grunt.loadNpmTasks('grunt-contrib-jshint');
 grunt.loadNpmTasks('grunt-mocha-test');
 grunt.loadNpmTasks('grunt-devserver');
+grunt.loadNpmTasks('grunt-bump');
 
 grunt.registerTask('default', ['jshint', 'uglify']);
 grunt.registerTask('run', ['default', 'test', 'devserver', 'watch']);
