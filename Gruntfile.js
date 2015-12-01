@@ -44,6 +44,20 @@ grunt.initConfig({
     server: {
       src: ['test/*.js']
     }
+  },
+
+  bump: {
+    options: {
+      files: ['package.json', 'bower.json'],
+      updateConfigs: [],
+      commit: true,
+      commitMessage: 'Release v%VERSION%',
+      commitFiles: ['-a'],
+      createTag: true,
+      tagName: '%VERSION%',
+      push: true,
+      pushTo: 'upstream'
+    }
   }
 });
 
@@ -57,5 +71,6 @@ grunt.loadNpmTasks('grunt-devserver');
 grunt.registerTask('default', ['jshint', 'uglify']);
 grunt.registerTask('run', ['default', 'test', 'devserver', 'watch']);
 grunt.registerTask('test', ['default', 'mochaTest']);
+grunt.registerTask('release', ['default', 'test', 'bump']);
 
 };

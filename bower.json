@@ -1,0 +1,25 @@
+{
+  "name": "simple-regexp",
+  "version": "0.1.2",
+  "homepage": "https://github.com/peterlindkvist/simple-regexp",
+  "authors": [
+    "Peter peter@superkrut.se"
+  ],
+  "description": "A chainable regular expression wrapper for text search and replacements.",
+  "main": "dist/srxp.js",
+  "keywords": [
+    "regular expressions",
+    "regexp",
+    "regex",
+    "text search",
+    "search",
+    "string match"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "tmp"
+  ]
+}

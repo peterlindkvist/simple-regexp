@@ -6,6 +6,7 @@ A chainable regular expression wrapper for text search and replacement.
 
 ## Examples
     
+    var srxp = require('simple-regexp'); 
     srxp('hi this is a simple text').word().include('s'); // ['this', 'is', 'simple']
     
 or finds all links in a html document without rel="nofollow"
@@ -18,7 +19,15 @@ or do a text replacement
 
 ## Installation
 
+npm:
+
     npm install simple-regexp
+
+bower:
+
+    bower install simple-regexp
+
+Or just copy `dist/srxp.js` to you javascript folder.
 
 
 ## API
